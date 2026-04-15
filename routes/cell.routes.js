@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const protect = require("../middleware/auth");
-const rbac = require("../middleware/rbac");
+const authorize = require("../middleware/authorize");
 const {
   createCell,
   getAllCells,
@@ -11,12 +11,15 @@ const {
 
 router.use(protect);
 
-router.route("/").get(getAllCells).post(rbac("admin", "warden"), createCell);
+router
+  .route("/")
+  .get(getAllCells)
+  .post(authorize("admin", "warden"), createCell);
 
 router
   .route("/:id")
   .get(getCell)
-  .put(rbac("admin", "warden"), updateCell)
-  .delete(rbac("admin"), deleteCell);
+  .put(authorize("admin", "warden"), updateCell)
+  .delete(authorize("admin"), deleteCell);
 
 module.exports = router;

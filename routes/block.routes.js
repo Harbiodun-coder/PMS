@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const protect = require("../middleware/auth");
-const rbac = require("../middleware/rbac");
+const authorize = require("../middleware/authorize");
 const {
   createBlock,
   getAllBlocks,
@@ -11,12 +11,15 @@ const {
 
 router.use(protect); // all block routes require login
 
-router.route("/").get(getAllBlocks).post(rbac("admin", "warden"), createBlock);
+router
+  .route("/")
+  .get(getAllBlocks)
+  .post(authorize("admin", "warden"), createBlock);
 
 router
   .route("/:id")
   .get(getBlock)
-  .put(rbac("admin", "warden"), updateBlock)
-  .delete(rbac("admin"), deleteBlock);
+  .put(authorize("admin", "warden"), updateBlock)
+  .delete(authorize("admin"), deleteBlock);
 
 module.exports = router;
